@@ -17,52 +17,58 @@ static volatile u32 *gpio_base = NULL;
 
 static ssize_t led_write(struct file* filp, const char* buf,size_t count, loff_t* pos)
 {
-	        char c;
-		        if(copy_from_user(&c,buf,sizeof(char)))
-				                return -EFAULT;
-			        if(c == '0'){
-					                gpio_base[10] = 1 << 25;
-							        }else if(c == '1'){
-									                gpio_base[7] = 1 << 25;
-											        }
-
-				        printk(KERN_INFO"receive %c\n",c);
-					        return 1;
+        char c;
+	        if(copy_from_user(&c,buf,sizeof(char)))
+	        	return -EFAULT;
+	        if(c == '0'){
+	        	gpio_base[10] = 1 << 17;
+			gpio_base[10] = 1 << 27;
+                        gpio_base[10] = 1 << 22;
+                        gpio_base[10] = 1 << 25;
+			gpio_base[10] = 1 << 12;
+                        gpio_base[10] = 1 << 26;
+	        }else if(c == '1'){
+	        	gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+			gpio_base[7] = 1 << 26;
+		}
+	        printk(KERN_INFO"receive %c\n",c);
+		return 1;
 }
 
 static ssize_t sushi_read(struct file* filp, char* buf, size_t count, loff_t* pos)
 {
-	        int size = 0;
-		        char sushi[] = {'s','u','s','h','i',0x0A};
-			        if(copy_to_user(buf+size,(const char *)sushi, sizeof (sushi))){
-					                printk(KERN_ERR "sushi: copy_to_user failed \n");
-							                return -EFAULT;
-									        }
-
-				        size += sizeof(sushi);
-					        return size;
+       	int size = 0;	
+	char sushi[] = {'s','u','s','h','i',0x0A};			
+	if(copy_to_user(buf+size,(const char *)sushi, sizeof (sushi))){				               
+	       	printk(KERN_ERR "sushi: copy_to_user failed \n");						               	       	return -EFAULT;							
+	}
+			    
+	size += sizeof(sushi);					       
+       	return size;
 }
-static struct file_operations led_fops = {
-	        .owner = THIS_MODULE,
-		        .write = led_write,
-			        .read = sushi_read
+
+static struct file_operations led_fops = {        
+	.owner = THIS_MODULE,	        
+	.write = led_write,		        
+	.read = sushi_read
 };
 
 static int __init init_mod(void)
-{
-	        int retval;
-		        retval = alloc_chrdev_region(&dev, 0, 1, "myled");
-			        if(retval < 0){
-					                printk(KERN_ERR "alloc_chrdev_region failed \n");
-							                return retval;
-									        }
-
-				        printk(KERN_INFO "%s is loaded. major:%d \n",__FILE__,MAJOR(dev));
-
-					        cdev_init(&cdv, &led_fops);
-						        retval = cdev_add(&cdv,dev,1);
-							        if(retval < 0){
-									                printk(KERN_ERR"cdev_add failed. major:%d minor %d\n ",MAJOR(dev),MINOR(dev));
+{        
+	int retval;	        
+	retval = alloc_chrdev_region(&dev, 0, 1, "myled");		        
+	if(retval < 0){			                
+		printk(KERN_ERR "alloc_chrdev_region failed \n");					                
+		return retval;									        }			        
+	printk(KERN_INFO "%s is loaded. major:%d \n",__FILE__,MAJOR(dev));				        
+	cdev_init(&cdv, &led_fops);					        
+	retval = cdev_add(&cdv,dev,1);						        
+	if(retval < 0){							                
+		printk(KERN_ERR"cdev_add failed. major:%d minor %d\n ",MAJOR(dev),MINOR(dev));
                 return retval;
         }
 
@@ -76,11 +82,16 @@ static int __init init_mod(void)
 
         gpio_base = ioremap_nocache(0xfe200000,0xA0);
 
-        const u32 led = 25;
-        const u32 index = led/10;
-        const u32 shift = (led%10)*3;
-        const u32 mask = ~(0x7 << shift);
-        gpio_base[index] = (gpio_base[index] & mask) | (0x1 << shift);
+        const u32 led1 = 17 ,led2 = 27,led3 = 22,led4 = 25,led5 = 12,led6 = 26;
+        const u32 index1 = led1/10, index2 = led2/10, index3 = led3/10, index4 = led4/10, index5 = led5/10, index6 = led6/10;
+        const u32 shift1 = (led1%10)*3, shift2 = (led2%10)*3, shift3 = (led3%10)*3, shift4 = (led4%10)*3,shift5 = (led5%10)*3, shift6 = (led6%10)*3;
+        const u32 mask1 = ~(0x7 << shift1),mask2 = ~(0x7 << shift2), mask3 = ~(0x7 << shift3), mask4 = ~(0x7 << shift4), mask5 = ~(0x7 << shift5), mask6 = ~(0x7 << shift6);
+	gpio_base[index1] = (gpio_base[index1] & mask1) | (0x1 << shift1);
+	gpio_base[index2] = (gpio_base[index2] & mask2) | (0x1 << shift2);
+        gpio_base[index3] = (gpio_base[index3] & mask3) | (0x1 << shift3);
+        gpio_base[index4] = (gpio_base[index4] & mask4) | (0x1 << shift4);
+        gpio_base[index5] = (gpio_base[index5] & mask5) | (0x1 << shift5);
+        gpio_base[index6] = (gpio_base[index6] & mask6) | (0x1 << shift6);
 
         return 0;
 }
