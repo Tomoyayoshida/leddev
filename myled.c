@@ -4,6 +4,8 @@
 #include<linux/device.h>
 #include<linux/uaccess.h>
 #include<linux/io.h>
+#include<linux/time.h>
+#include<linux/delay.h>
 
 MODULE_AUTHOR("Ryuichi Ueda and Tomoya Yoshida");
 MODULE_DESCRIPTION("driver for LED contron");
@@ -14,47 +16,162 @@ static dev_t dev;
 static struct cdev cdv;
 static struct class *cls = NULL;
 static volatile u32 *gpio_base = NULL;
+void ssleep(unsigned int seconds);
+
+int syori(char c){//Alphabet to Braille conversion process 
+	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')){	
+		if(c == 'a'|| c == 'A'){
+			gpio_base[7] = 1 << 17;
+		}else if(c == 'b'|| c == 'B'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 22;
+		}else if(c == 'c'|| c == 'C'){		
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+		}else if(c == 'd'|| c == 'D'){                
+			gpio_base[7] = 1 << 17;		
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+		}else if(c == 'e'|| c == 'E'){                        
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 25;
+		}else if(c == 'f'|| c == 'F'){                        
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+		}else if(c == 'g'|| c == 'G'){
+			gpio_base[7] = 1 << 17;
+                        gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+		}else if(c == 'h'|| c == 'H'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+		}else if(c == 'i'|| c == 'I'){
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+		}else if(c == 'j'|| c == 'J'){
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+		}else if(c == 'k'|| c == 'K'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'l'|| c == 'L'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'm'|| c == 'M'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'n'|| c == 'N'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'o'|| c == 'O'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'p'|| c == 'P'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'q'|| c == 'Q'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'r'|| c == 'R'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 's'|| c == 'S'){
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 't'|| c == 'T'){
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+		}else if(c == 'u'|| c == 'U'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 12;
+			gpio_base[7] = 1 << 26;
+		}else if(c == 'v'|| c == 'V'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 12;
+			gpio_base[7] = 1 << 26;
+		}else if(c == 'w'|| c == 'W'){
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 22;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 26;
+		}else if(c == 'x'|| c == 'X'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 12;
+			gpio_base[7] = 1 << 26;
+		}else if(c == 'y'|| c == 'Y'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 27;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+			gpio_base[7] = 1 << 26;
+		}else if(c == 'z'|| c == 'Z'){
+			gpio_base[7] = 1 << 17;
+			gpio_base[7] = 1 << 25;
+			gpio_base[7] = 1 << 12;
+			gpio_base[7] = 1 << 26;
+		}
+		ssleep(3);
+		gpio_base[10] = 1 << 17;                        
+		gpio_base[10] = 1 << 27;         
+		gpio_base[10] = 1 << 22;
+		gpio_base[10] = 1 << 25;
+		gpio_base[10] = 1 << 12;		
+		gpio_base[10] = 1 << 26;
+	}
+	return 1;
+}
 
 static ssize_t led_write(struct file* filp, const char* buf,size_t count, loff_t* pos)
 {
         char c;
 	        if(copy_from_user(&c,buf,sizeof(char)))
 	        	return -EFAULT;
-	        if(c == '0'){
+		syori(c);
+	        if(c == '0'){//all LEDs turn off.
 	        	gpio_base[10] = 1 << 17;
 			gpio_base[10] = 1 << 27;
                         gpio_base[10] = 1 << 22;
                         gpio_base[10] = 1 << 25;
 			gpio_base[10] = 1 << 12;
                         gpio_base[10] = 1 << 26;
-	        }else if(c == '1'){
+	        }else if(c == '1'){//all LEDs turn out.
 	        	gpio_base[7] = 1 << 17;
 			gpio_base[7] = 1 << 27;
 			gpio_base[7] = 1 << 22;
 			gpio_base[7] = 1 << 25;
 			gpio_base[7] = 1 << 12;
 			gpio_base[7] = 1 << 26;
+		}else if(c == '2'){
+			
 		}
 	        printk(KERN_INFO"receive %c\n",c);
 		return 1;
 }
 
-static ssize_t sushi_read(struct file* filp, char* buf, size_t count, loff_t* pos)
-{
-       	int size = 0;	
-	char sushi[] = {'s','u','s','h','i',0x0A};			
-	if(copy_to_user(buf+size,(const char *)sushi, sizeof (sushi))){				               
-	       	printk(KERN_ERR "sushi: copy_to_user failed \n");						               	       	return -EFAULT;							
-	}
-			    
-	size += sizeof(sushi);					       
-       	return size;
-}
-
 static struct file_operations led_fops = {        
 	.owner = THIS_MODULE,	        
-	.write = led_write,		        
-	.read = sushi_read
+	.write = led_write
 };
 
 static int __init init_mod(void)
