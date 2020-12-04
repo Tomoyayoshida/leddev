@@ -16,7 +16,7 @@ static dev_t dev;
 static struct cdev cdv;
 static struct class *cls = NULL;
 static volatile u32 *gpio_base = NULL;
-void ssleep(unsigned int seconds);
+void ssleep(unsigned int seconds);        
 
 int syori(char c){//Alphabet to Braille conversion process 
 	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')){	
@@ -144,28 +144,27 @@ int syori(char c){//Alphabet to Braille conversion process
 
 static ssize_t led_write(struct file* filp, const char* buf,size_t count, loff_t* pos)
 {
-        char c;
-	        if(copy_from_user(&c,buf,sizeof(char)))
-	        	return -EFAULT;
-		syori(c);
-	        if(c == '0'){//all LEDs turn off.
-	        	gpio_base[10] = 1 << 17;
-			gpio_base[10] = 1 << 27;
-                        gpio_base[10] = 1 << 22;
-                        gpio_base[10] = 1 << 25;
-			gpio_base[10] = 1 << 12;
-                        gpio_base[10] = 1 << 26;
-	        }else if(c == '1'){//all LEDs turn out.
-	        	gpio_base[7] = 1 << 17;
-			gpio_base[7] = 1 << 27;
-			gpio_base[7] = 1 << 22;
-			gpio_base[7] = 1 << 25;
-			gpio_base[7] = 1 << 12;
-			gpio_base[7] = 1 << 26;
-		}else if(c == '2'){
-			
+        char c;	       
+       	if(copy_from_user(&c,buf,sizeof(char)))       
+		return -EFAULT;	
+	syori(c);
+	if(c == '0'){//all LEDs turn off. 	
+		gpio_base[10] = 1 << 17;
+		gpio_base[10] = 1 << 27;
+		gpio_base[10] = 1 << 22;
+		gpio_base[10] = 1 << 25;
+		gpio_base[10] = 1 << 12;
+		gpio_base[10] = 1 << 26;
+	}else if(c == '1'){//all LEDs turn out.
+		gpio_base[7] = 1 << 17;
+		gpio_base[7] = 1 << 27;
+		gpio_base[7] = 1 << 22;
+		gpio_base[7] = 1 << 25;
+		gpio_base[7] = 1 << 12;
+		gpio_base[7] = 1 << 26;
 		}
-	        printk(KERN_INFO"receive %c\n",c);
+
+	        printk(KERN_INFO "receive %c\n",c);
 		return 1;
 }
 
