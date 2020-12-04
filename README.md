@@ -24,6 +24,8 @@ raspberry pi 4 Model B
 
 ・raspberry　pi 4 Model B
 
+・ジャンプワイヤ×7
+
 # 回路図
 
 ![image](https://user-images.githubusercontent.com/73051935/101156337-cd60b600-366b-11eb-84db-081c67e24a0f.png)
