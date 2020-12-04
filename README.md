@@ -23,6 +23,11 @@ raspberry pi 4 Model B
 ・220Ωの抵抗×6
 
 ・raspberry　pi 4 Model B
+
+# 回路図
+
+![image](https://user-images.githubusercontent.com/73051935/101156337-cd60b600-366b-11eb-84db-081c67e24a0f.png)
+
 ### 実行方法
 https://github.com/Tomoyayoshida/leddev.git をクローン
 
