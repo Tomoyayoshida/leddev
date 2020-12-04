@@ -9,7 +9,7 @@
 ---
 
 ### 実行環境
-Ubuntu 18.04
+Ubuntu 20.04
 
 raspberry pi 4 Model B
 
