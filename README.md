@@ -38,7 +38,7 @@ robosys2020 task1
 
 `$ make clean` で元のファイルの状態へ戻す
 ## 動画
-https://youtu.be/mm7KjFGx8Ms
+~~https://youtu.be/mm7KjFGx8Ms~~ 大学の垢が使えなくなったため見れなくなりました。
 ## 作成者
 Tomoya yoshida and Ryuichi Ueda 
 ## license
